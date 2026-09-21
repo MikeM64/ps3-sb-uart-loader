@@ -12,7 +12,7 @@ CFLAGS ?= -Wall -Werror -Wpedantic -ffreestanding -std=gnu99 -mbig-endian -O1 -m
 	  -Iinclude/
 
 LDFLAGS ?= -melf64ppc -T src/main.ld --print-map
-ASFLAGS ?= -D__ASSEMBLY__ -Iinclude/
+ASFLAGS ?= -mregnames -mbig-endian -mcell -Iinclude/
 
 CC = $(PREFIX)gcc
 CXX = $(PREFIX)gcc
@@ -37,8 +37,8 @@ clean:
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-%.o: %.s
-	$(AS) $(ASFLAGS) -c -o $@ $<
+%.o: %.S
+	$(AS) $(ASFLAGS) -o $@ $<
 
 ps3-sb-uart-loader.elf: $(OBJ)
 	$(LD) -o ps3-sb-uart-loader.elf $(LDFLAGS) $(OBJ)

@@ -7,9 +7,6 @@
 .global _start
 
 _start:
-
-_hang:
-	b _hang
 	/* Set up the TOC register. */
 	lis r2, (__toc_start+0x8000)@h
 	ori r2, r2, (__toc_start+0x8000)@l
@@ -39,4 +36,5 @@ _bss_loop:
 	bl main
 	
 	/*! Hang if main returns. */
+_hang:
 	b _hang
