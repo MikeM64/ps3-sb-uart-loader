@@ -12,11 +12,14 @@
 #include "types.h"
 #include "elfloader.h"
 #include "sb_printf.h"
+#include "sb_uart.h"
 
 int main (int argc, char *argv[])
 {
     int  rc;
     u8  *elf_buffer = NULL;
+
+    sb_init();
 
     INFO_LOG("PS3 SB UART Loader Started!");
 

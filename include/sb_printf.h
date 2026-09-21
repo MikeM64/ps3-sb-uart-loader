@@ -8,11 +8,19 @@
 int sb_printf(const char *fmt, ...);
 int vsb_printf(const char *fmt, va_list args);
 
-#define INFO_LOG(fmt, ...) \
-	sb_printf("[INFO   ]: "fmt"\n", ##__VA_ARGS__)
-#define WARN_LOG(fmt, ...) \
-	sb_printf("[WARNING]: "fmt"\n", ##__VA_ARGS__)
-#define ERROR_LOG(fmt, ...) \
-	sb_printf("[!!ERROR]: "fmt"\n", ##__VA_ARGS__)
+#define INFO_LOG(...) \
+        sb_printf("[INFO   ]:"); \
+        sb_printf(__VA_ARGS__); \
+        sb_printf("\n")
+
+#define WARN_LOG(...) \
+        sb_printf("[WARNING]:"); \
+	sb_printf(__VA_ARGS__); \
+        sb_printf("\n")
+
+#define ERROR_LOG(...) \
+        sb_printf("[!!ERROR]:"); \
+	sb_printf(__VA_ARGS__); \
+        sb_printf("\n")
 
 #endif /* __SB_PRINTF_H__ */

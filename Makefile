@@ -8,7 +8,7 @@
 #
 
 PREFIX ?= powerpc64-ps3-elf-
-CFLAGS ?= -Wall -ffreestanding -std=gnu99 -mbig-endian -O1 -mcpu=cell -m64\
+CFLAGS ?= -Wall -Werror -Wpedantic -ffreestanding -std=gnu99 -mbig-endian -O1 -mcpu=cell -m64\
 	  -Iinclude/
 
 LDFLAGS ?= -melf64ppc -T src/main.ld --print-map
