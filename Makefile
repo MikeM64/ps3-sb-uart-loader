@@ -8,10 +8,10 @@
 #
 
 PREFIX ?= powerpc64-ps3-elf-
-CFLAGS ?= -Wall -Werror -Wpedantic -ffreestanding -std=gnu99 -mbig-endian -O1 -mcpu=cell -m64\
+CFLAGS ?= -Wall -Werror -Wpedantic -ffreestanding -fpie -std=gnu99 -mbig-endian -O1 -mcpu=cell -m64\
 	  -Iinclude/
 
-LDFLAGS ?= -melf64ppc -T src/main.ld --print-map
+LDFLAGS ?= -melf64ppc -pie --print-map
 ASFLAGS ?= -mregnames -mbig-endian -mcell -Iinclude/
 
 CC = $(PREFIX)gcc
@@ -24,15 +24,21 @@ OBJCOPY = $(PREFIX)objcopy
 .PHONY: clean
 .DEFAULT_GOAL := all
 
-SRC := $(shell find . -name "*.c" -or -name "*.S")
+SRC_C := $(shell find . -name "*.c")
+SRC_S := $(shell find . -name "*.S")
+SRC := $(SRC_C) $(SRC_S)
 
-# Two Pass substitution for object names
-OBJ_C := $(SRC:.c=.o)
-OBJ = $(OBJ_C:.S=.o)
+OBJ_C := $(SRC_C:.c=.o)
+OBJ_S := $(SRC_S:.S=.o)
+OBJ := $(OBJ_S) $(OBJ_C)
+
+OBJ_BADWDSD_S := src/start_badwdsd.o
+OBJ_ELF_S := src/start.o
 
 clean:
 	rm -rf src/*.o
 	rm -rf *.elf
+	rm -rf ps3-sb-uart-loader.badwdsd.bin
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -40,8 +46,12 @@ clean:
 %.o: %.S
 	$(AS) $(ASFLAGS) -o $@ $<
 
-ps3-sb-uart-loader.elf: $(OBJ)
-	$(LD) -o ps3-sb-uart-loader.elf $(LDFLAGS) $(OBJ)
+ps3-sb-uart-loader.elf: $(OBJ_C) $(OBJ_ELF_S)
+	$(LD) -o ps3-sb-uart-loader.elf $(LDFLAGS) -T src/main.ld $(OBJ_ELF_S) $(OBJ_C)
 
-all: ps3-sb-uart-loader.elf
+ps3-sb-uart-loader.badwdsd.bin: $(OBJ_C) $(OBJ_BADWDSD_S)
+	$(LD) -o ps3-sb-uart-loader.badwdsd.bin $(LDFLAGS) -T src/badwdsd.ld $(OBJ_BADWDSD_S) $(OBJ_C)
+
+
+all: ps3-sb-uart-loader.elf ps3-sb-uart-loader.badwdsd.bin
 
